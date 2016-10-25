@@ -12,15 +12,51 @@ class AC_CMB2_Custom_Fields{
     }
 
     public function init(){
-        add_action( 'cmb2_admin_init', array( $this,'register_page_fields') );
+        add_action( 'cmb2_admin_init', array( $this, 'register_page_fields' ) );
+        add_action( 'cmb2_admin_init', array( $this, 'create_custom_post_type' ) );
+        add_action( 'cmb2_admin_init', array( $this, 'create_custom_taxonomy_hierarchical' ) );
+        add_action( 'cmb2_admin_init', array( $this, 'create_custom_taxonomy_non_hierarchical' ) );
     }
 
-    public function register_page_fields($meta_boxes){
+    function create_custom_post_type(){
+
+        register_post_type('custom', array(
+                'labels' => array(
+                    'name' 			=> __('Customs Post Type'),
+                    'singular_name'	=> __('Custom')
+                ),
+                'public'		=> true,
+                'has_archive'	=> true,
+                'rewrite'		=> array('slug' => 'custom'),
+            )
+        );
+    }
+
+    function create_custom_taxonomy_hierarchical(){
+
+        register_taxonomy('custom_hi_tax', array('post', 'page', 'custom'), array(
+                'label' => 'Custom Hierarchical',
+                'hierarchical' => true,
+            )
+        );
+    }
+
+    function create_custom_taxonomy_non_hierarchical(){
+
+        register_taxonomy('custom_non_hi_tax', array('post', 'page', 'custom'), array(
+                'label' => 'Custom Non-Hierarchical',
+                'hierarchical' => false,
+            )
+        );
+    }
+
+
+    public function register_page_fields(){
         $prefix = 'cmb2_';
         $cmb = new_cmb2_box( array(
             'id'            => 'test_metabox',
             'title'         => __( 'Test Metabox', 'cmb2' ),
-            'object_types'  => array( 'page', 'post', ),
+            'object_types'  => array( 'page', 'post', 'custom'),
             'context'       => 'normal',
             'priority'      => 'high',
             'show_names'    => true,
@@ -198,6 +234,41 @@ class AC_CMB2_Custom_Fields{
             )
         ));
 
+/*
+        $var = '';
+        $args = array(
+            'posts_per_page' => 10,
+            'orderby' => 'date'
+        );
+
+        $posts_array = get_posts($args);
+        foreach ($posts_array as $post) {
+         $var .= $post->post_title;
+        }
+
+        $str = '';
+
+        for($i =1; $i <=10; $i++) {
+            $str .= $i++;
+        }
+*/
+        function optionscb($field){
+            if (has_category('uncategorized', $field->object_id)){
+                return array(
+                    'tabby'   => __( 'Tabby', 'cmb2' ),
+                    'siamese' => __( 'Siamese', 'cmb2' ),
+                    'calico'  => __( 'Calico', 'cmb2' ),
+                );
+
+            }else {
+                return array(
+                    'german-shepherd' => __( 'German Shepherd', 'cmb2' ),
+                    'bulldog'         => __( 'Bulldog', 'cmb2' ),
+                    'poodle'          => __( 'Poodle', 'cmb2' ),
+                );
+            }
+        }
+
         // Select
         $cmb->add_field( array(
             'name'             => 'Test Select',
@@ -205,12 +276,8 @@ class AC_CMB2_Custom_Fields{
             'id'               => $prefix . 'select',
             'type'             => 'select',
             'show_option_none' => true,
-            'default'          => 'custom',
-            'options'          => array(
-                'standard'   => __( 'Option One', 'cmb2' ),
-                'custom'     => __( 'Option Two', 'cmb2' ),
-                'none'       => __( 'Option Three', 'cmb2' ),
-            ),
+            'options_cb'       => 'optionscb'
+
         ) );
 
         // Taxonomy Radio
@@ -296,6 +363,7 @@ class AC_CMB2_Custom_Fields{
                 'sortable'      => true,
             ),
         ) );
+
 
 
         $cmb->add_group_field( $group_field_id, array(
