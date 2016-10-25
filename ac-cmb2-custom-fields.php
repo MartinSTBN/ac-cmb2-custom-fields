@@ -20,12 +20,10 @@ class AC_CMB2_Custom_Fields{
         $cmb = new_cmb2_box( array(
             'id'            => 'test_metabox',
             'title'         => __( 'Test Metabox', 'cmb2' ),
-            'object_types'  => array( 'page', ), // Post type
+            'object_types'  => array( 'page', 'post', ),
             'context'       => 'normal',
             'priority'      => 'high',
-            'show_names'    => true, // Show field names on the left
-            // 'cmb_styles' => false, // false to disable the CMB stylesheet
-            // 'closed'     => true, // Keep the metabox closed by default
+            'show_names'    => true,
     ) );
 
         // Title
@@ -290,22 +288,21 @@ class AC_CMB2_Custom_Fields{
             'id'          => 'wiki_test_repeat_group',
             'type'        => 'group',
             'description' => __( 'Generates reusable form entries', 'cmb2' ),
-            // 'repeatable'  => false, // use false if you want non-repeatable group
+
             'options'     => array(
-                'group_title'   => __( 'Entry {#}', 'cmb2' ), // since version 1.1.4, {#} gets replaced by row number
+                'group_title'   => __( 'Entry {#}', 'cmb2' ),
                 'add_button'    => __( 'Add Another Entry', 'cmb2' ),
                 'remove_button' => __( 'Remove Entry', 'cmb2' ),
-                'sortable'      => true, // beta
-                // 'closed'     => true, // true to have the groups closed by default
+                'sortable'      => true,
             ),
         ) );
 
-// Id's for group's fields only need to be unique for the group. Prefix is not needed.
+
         $cmb->add_group_field( $group_field_id, array(
             'name' => 'Entry Title',
             'id'   => 'title',
             'type' => 'text',
-            // 'repeatable' => true, // Repeatable fields are supported w/in repeatable groups (for most types)
+
         ) );
 
         $cmb->add_group_field( $group_field_id, array(
@@ -324,7 +321,7 @@ class AC_CMB2_Custom_Fields{
         $cmb->add_group_field( $group_field_id, array(
             'name' => 'Image Caption',
             'id'   => 'image_caption',
-            'type' => 'text',
+            'type' => 'text'
         ) );
     }
 
